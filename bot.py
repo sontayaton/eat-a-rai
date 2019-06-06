@@ -8,6 +8,7 @@ from linebot.models import (MessageEvent, TextMessage, TextSendMessage,)
 
 app = Flask(__name__)
 
+match_messages = os.getenv('MATCH_MSG',"").split(",")
 # Reply message list
 reply_lists = os.getenv('REPLY_MSG',"").split(",")
 # get channel_secret and channel_access_token from your environment variable
@@ -48,10 +49,10 @@ def webhook():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=random.choice(reply_lists)))
+    if any(event.message.text in s for s in match_messages):
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=random.choice(reply_lists)))
 
 
 if __name__ == "__main__":
