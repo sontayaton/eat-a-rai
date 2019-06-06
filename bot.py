@@ -1,5 +1,6 @@
 import os
 import sys
+import random
 from flask import Flask, request, abort
 from linebot import (LineBotApi, WebhookHandler)
 from linebot.exceptions import (InvalidSignatureError)
@@ -8,7 +9,7 @@ from linebot.models import (MessageEvent, TextMessage, TextSendMessage,)
 app = Flask(__name__)
 
 # Reply message list
-reply_lists = os.getenv('REPLY_MSG',None)
+reply_lists = os.getenv('REPLY_MSG',"").split(",")
 # get channel_secret and channel_access_token from your environment variable
 channel_secret = os.getenv('CHANNEL_SECRET', None)
 channel_access_token = os.getenv('CHANNEL_ACCESS_TOKEN', None)
@@ -47,9 +48,10 @@ def webhook():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
+    
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text=event.message.text))
+        TextSendMessage(text=random.choice(reply_lists)))
 
 
 if __name__ == "__main__":
